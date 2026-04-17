@@ -1,5 +1,5 @@
 // tree.c — Tree object serialization and construction
-//
+
 // PROVIDED functions: get_file_mode, tree_parse, tree_serialize
 // TODO functions:     tree_from_index
 //
@@ -16,6 +16,8 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
+
+int object_write(ObjectType type, const void *data, size_t len, ObjectID *id_out);
 // ─── Mode Constants ─────────────────────────────────────────────────────────
 
 #define MODE_FILE      0100644
@@ -130,8 +132,45 @@ int tree_serialize(const Tree *tree, void **data_out, size_t *len_out) {
 //
 // Returns 0 on success, -1 on error.
 int tree_from_index(ObjectID *id_out) {
-    // TODO: Implement recursive tree building
-    // (See Lab Appendix for logical steps)
-    (void)id_out;
-    return -1;
+    if (!id_out) return -1;
+
+    FILE *f = fopen(INDEX_FILE, "r");
+    if (!f) return -1;
+
+    Tree tree;
+    tree.count = 0;
+
+    char path[512];
+    char hash_hex[HASH_HEX_SIZE + 1];
+    unsigned int mode;
+    unsigned long mtime_sec;
+    unsigned int size;
+
+    while (fscanf(f, "%o %64s %lu %u %511s",
+                  &mode, hash_hex, &mtime_sec, &size, path) == 5) {
+        if (tree.count >= MAX_TREE_ENTRIES) {
+            fclose(f);
+            return -1;
+        }
+
+        TreeEntry *e = &tree.entries[tree.count++];
+        e->mode = mode;
+
+        if (hex_to_hash(hash_hex, &e->hash) != 0) {
+            fclose(f);
+            return -1;
+        }
+
+        snprintf(e->name, sizeof(e->name), "%s", path);
+    }
+
+    fclose(f);
+
+    void *data = NULL;
+    size_t len = 0;
+    if (tree_serialize(&tree, &data, &len) != 0) return -1;
+
+    int rc = object_write(OBJ_TREE, data, len, id_out);
+    free(data);
+    return rc;
 }
