@@ -1,32 +1,46 @@
 # PES Version Control System (PES-VCS)
-Name: vinayak kalal  
+
+Name: vinayak kalal
+
 SRN: PES2UG25AM809  
 
 
 ## Phase 1
+
 ![1A](screenshots/1A.png)
+
 ![1B](screenshots/1B.png)
 
 ## Phase 2
+
 ![2A](screenshots/2A.png)
+
 ![2B](screenshots/2B.png)
 
 ## Phase 3
+
 ![3A](screenshots/3A.png)
+
 ![3B](screenshots/3B.png)
 
 ## Phase 4
+
 ![4A](screenshots/4A.png)
+
 ![4B](screenshots/4B.png)
+
 ![4C](screenshots/4C.png)
 
 ## Integration Test
+
 ![Final](screenshots/final.png)
+
 ![Final2](screenshots/final2.png)
 
 
 
 Q 5.1
+
 The object store uses SHA-256 hashing to uniquely identify data. 
 Each object is stored using its hash, ensuring that identical content 
 is stored only once (deduplication). This provides integrity and 
